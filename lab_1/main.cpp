@@ -28,9 +28,11 @@ int main() {
     LibrarianGenerator baba_luda = LibrarianGenerator("Some string about warm love of Ron Uisli and his rat. Rat, rat, rat. How I like you my llittle liker of looking of sleeping ron.");
     BlumMikaliGenerator blum_mika = BlumMikaliGenerator("12323eac7823");
     BlumMikaliByteGenerator blum_mika_byte = BlumMikaliByteGenerator("12323eac7823");
+    BlumBlumShubaGenerator blum_blum_shuba = BlumBlumShubaGenerator("12323eac7823");
+    BlumBlumShubaByteGenerator blum_blum_shuba_byte = BlumBlumShubaByteGenerator("12323eac7823");
 
     for(int i = 0; i < 100; ++i){
-        for(auto b: blum_mika_byte.next()){
+        for(auto b: blum_blum_shuba_byte.next()){
             std::cout << b << " ";
         }
 

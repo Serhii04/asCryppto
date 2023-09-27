@@ -266,4 +266,51 @@ public:
     }
 };
 
+class BlumBlumShubaGenerator: Generator
+{
+private:
+    LongNumber p = LongNumber("d5bbb96d30086ec484eba3d7f9caeb07");
+    LongNumber q = LongNumber("425d2b9bfdb25b9cf6c416cc6e37b59c1f");
+    LongNumber n = LongMul(p, q);
+    LongNumber r;
+public:
+    BlumBlumShubaGenerator(std::string r_str): r(LongNumber(r_str)){
+    }
+    std::vector<bool> next(){
+        r = LongMulMod(r, r, n);
+        r.smolarize();
+        n.smolarize();
+        
+        if(r.at_bit(0)){
+            return std::vector<bool>{true};
+        }
+
+        return std::vector<bool>{false};
+    }
+};
+
+class BlumBlumShubaByteGenerator: Generator
+{
+private:
+    LongNumber p = LongNumber("d5bbb96d30086ec484eba3d7f9caeb07");
+    LongNumber q = LongNumber("425d2b9bfdb25b9cf6c416cc6e37b59c1f");
+    LongNumber n = LongMul(p, q);
+    LongNumber r;
+public:
+    BlumBlumShubaByteGenerator(std::string r_str): r(LongNumber(r_str)){
+    }
+    std::vector<bool> next(){
+        r = LongMulMod(r, r, n);
+        r.smolarize();
+        n.smolarize();
+        
+        std::vector<bool> res(8);
+        for(int i = 0; i <8; ++i){
+            res[i] = r.at_bit(i);
+        }
+
+        return res;
+    }
+};
+
 
