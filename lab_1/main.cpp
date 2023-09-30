@@ -31,12 +31,18 @@ int main() {
     BlumBlumShubaGenerator blum_blum_shuba = BlumBlumShubaGenerator("12323eac7823");
     BlumBlumShubaByteGenerator blum_blum_shuba_byte = BlumBlumShubaByteGenerator("12323eac7823");
 
-    for(int i = 0; i < 100; ++i){
-        for(auto b: blum_blum_shuba_byte.next()){
-            std::cout << b << " ";
-        }
+    // // print bites
+    // for(int i = 0; i < 100; ++i){
+    //     for(auto b: blum_blum_shuba_byte.next()){
+    //         std::cout << b << " ";
+    //     }
 
-        // std::cout << std::endl;
+    //     // std::cout << std::endl;
+    // }
+
+    for(int i = 0; i < 100; ++i){
+        auto get_rez = blum_blum_shuba_byte.next_byte();
+        std::cout << "get: " << get_rez << std::endl;
     }
 
     return 0;
