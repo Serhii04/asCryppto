@@ -10,15 +10,30 @@
 #include "../crom1/long_number.h"
 
 
-class Generator
-{
+class Generator{
 private:
     /* data */
 public:
+    unsigned short int next_byte(){
+        int curent_id = 0;
+        unsigned short int res = 0;
+        
+        while(curent_id < 8){
+            std::vector<bool> generated_v = next();
+
+            for(auto b: generated_v){
+                res = res | (b << curent_id);
+                
+                curent_id += 1;
+            }
+        }
+
+        return res;
+    }
     virtual std::vector<bool> next() = 0;
 };
 
-class BuildInGenerator: Generator
+class BuildInGenerator: public Generator
 {
 public:
     std::vector<bool> next(){
@@ -26,7 +41,7 @@ public:
     }
 };
 
-class LehmerLowGenerator: Generator
+class LehmerLowGenerator: public Generator
 {
 private:
     unsigned int a;
@@ -53,7 +68,7 @@ public:
     }
 };
 
-class LehmerHighGenerator: Generator
+class LehmerHighGenerator: public Generator
 {
 private:
     unsigned int a;
@@ -81,7 +96,7 @@ public:
 
 };
 
-class L20Generator: Generator
+class L20Generator: public Generator
 {
 private:
     unsigned int a;
@@ -108,7 +123,7 @@ public:
     }
 };
 
-class L89Generator: Generator
+class L89Generator: public Generator
 {
 private:
     std::vector<bool> vals;
@@ -141,7 +156,7 @@ public:
 
 
 
-class GeffeGenerator: Generator
+class GeffeGenerator: public Generator
 {
 private:
     unsigned int a_11;
@@ -184,7 +199,7 @@ public:
         
 };
 
-class WolframGenerator: Generator
+class WolframGenerator: public Generator
 {
 private:
     unsigned int r;
@@ -201,7 +216,7 @@ public:
     }
 };
 
-class LibrarianGenerator: Generator
+class LibrarianGenerator: public Generator
 {
 private:
     std::string trash_text;
@@ -219,7 +234,7 @@ public:
     }
 };
 
-class BlumMikaliGenerator: Generator
+class BlumMikaliGenerator: public Generator
 {
 private:
     LongNumber p = LongNumber("cea42b987c44fa642d80ad9f51f10457690def10c83d0bc1bcee12fc3b6093e3");
@@ -241,7 +256,7 @@ public:
     }
 };
 
-class BlumMikaliByteGenerator: Generator
+class BlumMikaliByteGenerator: public Generator
 {
 private:
     LongNumber p = LongNumber("cea42b987c44fa642d80ad9f51f10457690def10c83d0bc1bcee12fc3b6093e3");
@@ -266,7 +281,7 @@ public:
     }
 };
 
-class BlumBlumShubaGenerator: Generator
+class BlumBlumShubaGenerator: public Generator
 {
 private:
     LongNumber p = LongNumber("d5bbb96d30086ec484eba3d7f9caeb07");
@@ -289,7 +304,7 @@ public:
     }
 };
 
-class BlumBlumShubaByteGenerator: Generator
+class BlumBlumShubaByteGenerator: public Generator
 {
 private:
     LongNumber p = LongNumber("d5bbb96d30086ec484eba3d7f9caeb07");
