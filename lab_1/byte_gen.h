@@ -11,8 +11,8 @@
 
 
 class Generator{
-private:
-    /* data */
+protected:
+    std::string gen_name = "Abstract Generator";
 public:
     unsigned short int next_byte(){
         int curent_id = 0;
@@ -31,11 +31,17 @@ public:
         return res;
     }
     virtual std::vector<bool> next() = 0;
+    std::string about(){
+        return "Generator: " + gen_name;
+    }
 };
 
 class BuildInGenerator: public Generator
 {
 public:
+    BuildInGenerator(){
+        gen_name = "BuildInGenerator";
+    }
     std::vector<bool> next(){
         return std::vector<bool>{bool(rand() % 2)};
     }
@@ -49,7 +55,9 @@ private:
     unsigned int x_c;
 
 public:
-    LehmerLowGenerator(unsigned int a, unsigned int c, unsigned int x_0): a(a), c(c), x_c(x_0){}
+    LehmerLowGenerator(unsigned int a, unsigned int c, unsigned int x_0): a(a), c(c), x_c(x_0){
+        gen_name = "LehmerLowGenerator";
+    }
     std::vector<bool> next(){
         unsigned int x_n = (a * x_c + c);
         x_c = x_n;
@@ -76,7 +84,9 @@ private:
     unsigned int x_c;
 
 public:
-    LehmerHighGenerator(unsigned int a, unsigned int c, unsigned int x_0): a(a), c(c), x_c(x_0){}
+    LehmerHighGenerator(unsigned int a, unsigned int c, unsigned int x_0): a(a), c(c), x_c(x_0){
+        gen_name = "LehmerHighGenerator";
+    }
     std::vector<bool> next(){
         unsigned int x_n = (a * x_c + c);
         x_c = x_n;
@@ -101,7 +111,9 @@ class L20Generator: public Generator
 private:
     unsigned int a;
 public:
-    L20Generator(unsigned int a): a(a){}
+    L20Generator(unsigned int a): a(a){
+        gen_name = "L20Generator";
+    }
     std::vector<bool> next(){
         // for(int i = 0; i < 32; ++i){
         //     if(i == 12 || i == 23 || i == 27 || i == 29){
@@ -132,6 +144,8 @@ public:
         if(vals.size() != 89){
             throw std::invalid_argument("Error: invalid inital vector size " + std::to_string(vals.size()) + ".");
         }
+
+        gen_name = "L89Generator";
     }
     L89Generator(unsigned int a){
         vals = std::vector<bool>(89);
@@ -140,6 +154,8 @@ public:
             vals[i] = a & 1;
             a = (a >> 1);
         }
+
+        gen_name = "L89Generator";
     }
     std::vector<bool> next(){
         bool res = vals[0] ^ vals[1];
@@ -167,6 +183,8 @@ public:
         l_9();
         l_9();
         l_10();
+
+        gen_name = "GeffeGenerator";
     }
     std::vector<bool> next(){
         bool x = l_11();
@@ -204,7 +222,9 @@ class WolframGenerator: public Generator
 private:
     unsigned int r;
 public:
-    WolframGenerator(unsigned int r): r(r){}
+    WolframGenerator(unsigned int r): r(r){
+        gen_name = "WolframGenerator";
+    }
     std::vector<bool> next(){
         // r = (r <<< 1) ^ (r | (r >> 1))
         r = ((r << 1) | (r >> 31)) ^ (r | ((r >> 1) | (r << 31)));
@@ -221,7 +241,9 @@ class LibrarianGenerator: public Generator
 private:
     std::string trash_text;
 public:
-    LibrarianGenerator(std::string trash_text):trash_text(trash_text){}
+    LibrarianGenerator(std::string trash_text):trash_text(trash_text){
+        gen_name = "LibrarianGenerator";
+    }
     std::vector<bool> next(){
         std::vector<bool> res(0);
         for(auto c: trash_text){
@@ -239,19 +261,19 @@ class BlumMikaliGenerator: public Generator
 private:
     LongNumber p = LongNumber("cea42b987c44fa642d80ad9f51f10457690def10c83d0bc1bcee12fc3b6093e3");
     LongNumber a = LongNumber("5b88c41246790891c095e2878880342e88c79974303bd0400b090fe38a688356");
-    LongNumber T_0;
     LongNumber comp_p = LongDivMod(LongSub(p, LongNumber("1")), LongNumber("2"));
 public:
+    LongNumber T_0;
     BlumMikaliGenerator(std::string T_0_str): T_0(LongNumber(T_0_str)){
+        gen_name = "BlumMikaliGenerator";
     }
     std::vector<bool> next(){
-        T_0 =  LongModPowerBarrett(a, T_0, p);
-
-        // std::cout << T_0.to_hex_string();
+        T_0 = LongModPowerBarrett(a, T_0, p);
 
         if(LongCmp(comp_p, T_0) == 1){
             return std::vector<bool>{true};
         }
+
         return std::vector<bool>{false};
     }
 };
@@ -266,6 +288,7 @@ private:
     LongNumber comp_p = LongDivMod(LongSub(p, LongNumber("1")), LongNumber("2"));
 public:
     BlumMikaliByteGenerator(std::string T_0_str): T_0(LongNumber(T_0_str)){
+        gen_name = "BlumMikaliByteGenerator";
     }
     std::vector<bool> next(){
         T_0 =  LongModPowerBarrett(a, T_0, p);
@@ -290,6 +313,7 @@ private:
     LongNumber r;
 public:
     BlumBlumShubaGenerator(std::string r_str): r(LongNumber(r_str)){
+        gen_name = "BlumBlumShubaGenerator";
     }
     std::vector<bool> next(){
         r = LongMulMod(r, r, n);
@@ -313,6 +337,7 @@ private:
     LongNumber r;
 public:
     BlumBlumShubaByteGenerator(std::string r_str): r(LongNumber(r_str)){
+        gen_name = "BlumBlumShubaByteGenerator";
     }
     std::vector<bool> next(){
         r = LongMulMod(r, r, n);

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "byte_gen.h"
+#include "byte_gen_test.h"
 
 using namespace std;
 
@@ -18,31 +19,66 @@ using namespace std;
 // }
 
 int main() {
-    BuildInGenerator build_in_gen = BuildInGenerator();
-    LehmerLowGenerator lehmer_low = LehmerLowGenerator(65537, 119, 4444444);
-    LehmerHighGenerator lehmer_high = LehmerHighGenerator(65537, 119, 4444444);
-    L20Generator l_20 = L20Generator(1);
-    L89Generator l_89 = L89Generator(429496295);
-    GeffeGenerator geffe = GeffeGenerator(34354672, 34656, 274563);
-    WolframGenerator wolfram = WolframGenerator(32456);
-    LibrarianGenerator baba_luda = LibrarianGenerator("Some string about warm love of Ron Uisli and his rat. Rat, rat, rat. How I like you my llittle liker of looking of sleeping ron.");
-    BlumMikaliGenerator blum_mika = BlumMikaliGenerator("12323eac7823");
-    BlumMikaliByteGenerator blum_mika_byte = BlumMikaliByteGenerator("12323eac7823");
-    BlumBlumShubaGenerator blum_blum_shuba = BlumBlumShubaGenerator("12323eac7823");
-    BlumBlumShubaByteGenerator blum_blum_shuba_byte = BlumBlumShubaByteGenerator("12323eac7823");
+    BuildInGenerator* build_in_gen = new BuildInGenerator();
+    LehmerLowGenerator* lehmer_low = new LehmerLowGenerator(65537, 119, 4444444);
+    LehmerHighGenerator* lehmer_high = new LehmerHighGenerator(65537, 119, 4444444);
+    L20Generator* l_20 = new L20Generator(1);
+    L89Generator* l_89 = new L89Generator(429496295);
+    GeffeGenerator* geffe = new GeffeGenerator(34354672, 34656, 274563);
+    WolframGenerator* wolfram = new WolframGenerator(32456);
+    LibrarianGenerator* baba_luda = new LibrarianGenerator("Some string about warm love of Ron Uisli and his rat. Rat, rat, rat. How I like you my llittle liker of looking of sleeping ron.");
+    BlumMikaliGenerator* blum_mika = new BlumMikaliGenerator("12323eac7823");
+    BlumMikaliByteGenerator* blum_mika_byte = new BlumMikaliByteGenerator("12323eac7823");
+    BlumBlumShubaGenerator* blum_blum_shuba = new BlumBlumShubaGenerator("12323eac7823");
+    BlumBlumShubaByteGenerator* blum_blum_shuba_byte = new BlumBlumShubaByteGenerator("12323eac7823");
 
-    // // print bites
+    std::vector<Generator*> gens = {
+        // build_in_gen,
+        // lehmer_low,
+        // lehmer_high,
+        // l_20,
+        // l_89,
+        // geffe,
+        // wolfram,
+        // baba_luda,
+        blum_mika,
+        blum_mika_byte,
+        blum_blum_shuba,
+        blum_blum_shuba_byte
+    };
+
     // for(int i = 0; i < 100; ++i){
-    //     for(auto b: blum_blum_shuba_byte.next()){
-    //         std::cout << b << " ";
-    //     }
-
-    //     // std::cout << std::endl;
+    //     auto get_rez = blum_blum_shuba_byte.next_byte();
+    //     std::cout << "get: " << get_rez << std::endl;
     // }
 
-    for(int i = 0; i < 100; ++i){
-        auto get_rez = blum_blum_shuba_byte.next_byte();
-        std::cout << "get: " << get_rez << std::endl;
+    std::cout << build_in_gen->about() << std::endl;
+
+    // int i = 1;
+    int i = 9;
+    for(auto gen: gens){
+        std::cout << i << ") " << gen->about() << std::endl;
+ 
+        int rv_size = 1000000;
+        std::vector<unsigned short int> rv(rv_size); 
+
+        for(int i = 0; i < rv_size; ++i){
+            std::cout << i << std::endl;
+            rv[i] = gen->next_byte();
+        }
+
+        std::vector<double> alphas{0.01, 0.05, 0.1};
+        for(auto alpha: alphas){
+            std::cout << "alpha = " << alpha << std::endl;
+            std::cout << "equality       :><: " << signs_equality(rv, alpha) << std::endl;
+            std::cout << "independence   :><: " << independence_of_signs(rv, alpha) << std::endl;
+            std::cout << "bsu r = 10^1   :><: " << binary_sequence_uniformity(rv, alpha, 10) << std::endl;
+            std::cout << "bsu r = 10^2   :><: " << binary_sequence_uniformity(rv, alpha, 100) << std::endl;
+            std::cout << "bsu r = 10^3   :><: " << binary_sequence_uniformity(rv, alpha, 1000) << std::endl;
+            std::cout << "bsu r = 10^5   :><: " << binary_sequence_uniformity(rv, alpha, 10000) << std::endl;
+        }
+
+        i += 1;
     }
 
     return 0;
