@@ -156,10 +156,11 @@ class WolframGenerator(Generator):
     def __init__(self, r):
         self.r = r
         self.gen_name = "WolframGenerator";
+        self.m = pow(2, 32)
     
     def next(self):
-        # r = (r <<< 1) ^ (r | (r >> 1))
-        self.r = ((self.r << 1) | (self.r >> 31)) ^ (self.r | ((self.r >> 1) | (self.r << 31)));
+        # r = (r <<< 1) ^ (r | (r >>> 1))
+        self.r = ((self.r << 1) | (self.r >> 31)) ^ (self.r | ((self.r >> 1) | (self.r << 31))) % self.m
 
         if self.r % 2:
             return [True];
@@ -177,21 +178,27 @@ class LibrarianGenerator(Generator):
         res = []
         
         c = ord(self.trash_text[self.id])
+        self.id += 1
         for i in range(0, 8):
             res.append((c >> i) & 1);
+        
+        if self.id >= len(self.trash_text):
+            print("Text is small. need improvements")
+            self.trash_text = input("Please, type new text: ")
+            self.id = 0
 
         return res;
 
 class BlumMikaliGenerator(Generator):
-    p = 0xcea42b987c44fa642d80ad9f51f10457690def10c83d0bc1bcee12fc3b6093e3
-    a = 0x5b88c41246790891c095e2878880342e88c79974303bd0400b090fe38a688356
-    comp_p = (p - 1) // 2
-
-    T_0 = 0
-
     def __init__(self, T_0_str):
         self.T_0 = int(T_0_str, 16)
         self.gen_name = "BlumMikaliGenerator";
+    
+        self.p = 0xcea42b987c44fa642d80ad9f51f10457690def10c83d0bc1bcee12fc3b6093e3
+        self.a = 0x5b88c41246790891c095e2878880342e88c79974303bd0400b090fe38a688356
+        self.comp_p = (self.p - 1) // 2
+
+        self.T_0 = 0
 
     def next(self):
         self.T_0 = pow(self.a, self.T_0, self.p)
@@ -213,7 +220,6 @@ class BlumMikaliByteGenerator(Generator):
         self.T_0 =  pow(self.a, self.T_0, self.p)
 
         temp = (self.T_0 * 128) % self.q
-
         res = [0 for i in range(8)]
         
         for i in range(7, -1, -1):
