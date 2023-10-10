@@ -1,11 +1,11 @@
 import io
-# import os
-# print(os.getcwd())
 
 import byte_gen
 from byte_gen_test import signs_equality as se
 from byte_gen_test import independence_of_signs as ios
 from byte_gen_test import binary_sequence_uniformity as bsu
+from byte_gen_test import chi_2_quantile as ch2
+from my_timer import My_Timer
 
 
 def bp(b):
@@ -14,7 +14,7 @@ def bp(b):
     
     return "False"
 
-def main():
+def main(rv_size=1000000):
     build_in_gen = byte_gen.BuildInGenerator();
     lehmer_low = byte_gen.LehmerLowGenerator(65537, 119, 4444444);
     lehmer_high = byte_gen.LehmerHighGenerator(65537, 119, 4444444);
@@ -34,42 +34,43 @@ def main():
     blum_blum_shuba_byte = byte_gen.BlumBlumShubaByteGenerator("12323eac7823");
 
     gens = [
-        # build_in_gen,
-        # lehmer_low,
-        # lehmer_high,
-        # l_20,
-        # l_89,
-        # geffe,
-        # wolfram,
-        # baba_luda,
-        # blum_mika,
+        build_in_gen,
+        lehmer_low,
+        lehmer_high,
+        l_20,
+        l_89,
+        geffe,
+        wolfram,
+        baba_luda,
+        blum_mika,
         blum_mika_byte,
-        # blum_blum_shuba,
-        # blum_blum_shuba_byte,
+        blum_blum_shuba,
+        blum_blum_shuba_byte,
     ]
 
+    timer_ = My_Timer()
     k = 1
     for gen in gens:
         print(f"\n{k:2d}) {gen.about()}")
- 
-        rv_size = 2000000;
+
         rv = [] 
 
         for i in range(0, rv_size):
             next = gen.next_byte()
             rv.append(next)
-            # if rv[-1] < 0 or rv[-1] > 255: # for case if there is an error
-            #     print(f"<{rv[-1]}>", end="")
-
-        alphas = [0.01, 0.05, 0.1];
         
         print("alphas | equality | independence | bsu 10^1 | bsu 10^2 | bsu 10^3 | bsu 10^4")
-        for a in alphas:
+        for a in [0.01, 0.05, 0.1]:
             print(f"{a:0.2f}   | {bp(se(rv, a))}    | {bp(ios(rv, a))}        | {bp(bsu(rv, a,10))}    | {bp(bsu(rv, a,100))}    | {bp(bsu(rv, a,1000))}    | {bp(bsu(rv, a,10000))}")
 
-        k += 1;
+        print(f"Spend: {timer_.point(): 0.2f} s.")
+        k += 1
 
     return 0;
+
+def main2():
+    for alpha in [0.01, 0.05, 0.1]:
+        print(f"{alpha:0.2f} | {ch2(1 - alpha)} | {ch2(1 - alpha, pow(255, 2))} | {ch2(1 - alpha, 255 * (pow(10, 1) - 1))} | {ch2(1 - alpha, 255 * (pow(10, 2) - 1))} | {ch2(1 - alpha, 255 * (pow(10, 3) - 1))} | {ch2(1 - alpha, 255 * (pow(10, 4) - 1))}")
 
 if __name__ == "__main__":
     main()

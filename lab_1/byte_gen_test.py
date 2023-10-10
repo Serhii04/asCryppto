@@ -35,62 +35,57 @@ def signs_equality(rv, alpha):
     observed_quantity = dict()
 
     for i in rv:
-        if observed_quantity.get(i) != None:
-            observed_quantity[i] += 1;
-        else:
-            observed_quantity[i] = 1;
+        if observed_quantity.get(i) == None:
+            observed_quantity[i] = 0
+        
+        observed_quantity[i] += 1
 
-    n_j = len(rv) / 256;
-    stat = 0;
+    n_j = len(rv) / 256
+
+    stat = 0
     for key in observed_quantity:
-        # // std::cout << x.first << " => " << x.second << '\n';
-        stat += pow(observed_quantity[key] - n_j, 2) / n_j;
+        stat += pow(observed_quantity[key] - n_j, 2) / n_j
 
-    quantile = chi_2_quantile(1 - alpha);
+    quantile = chi_2_quantile(1 - alpha)
 
     if stat <= quantile:
-        return True;
+        return True
 
-    return False;
+    return False
 
 
 def independence_of_signs(rv, alpha):
-    vij = dict();
-    aj = dict();
-    vi = dict();
+    vij = dict()
+    vi = dict()
+    aj = dict()
 
-    for i  in range(0, len(rv) // 2): #calculate vij, vi, aj
-        v1 = rv[2 * i];
-        v2 = rv[2 * i + 1];
+    for i  in range(0, len(rv) // 2):
+        v1 = rv[2 * i]
+        v2 = rv[2 * i + 1]
 
         if vij.get(v1) == None:
             vij[v1] = dict()
-            vi[v1] = 0;
+            vi[v1] = 0
         
-        vi[v1] += 1;
 
         if vij[v1].get(v2) == None:
-            vij[v1][v2] = 1;
-            aj[v2] = 1;
-        else:
-            vij[v1][v2] += 1;
-            aj[v2] += 1;
+            vij[v1][v2] = 0
+            aj[v2] = 0
 
-    stat = 0;
-    for v_key in vi:
-        for a_key in aj:
-            if vij.get(v_key) == None:
-                vij[v_key] = dict()
-                vij[v_key][a_key] = 0
-            
-            if vij[v_key].get(a_key) == None:
-                vij[v_key][a_key] = 0
+        vij[v1][v2] += 1
+        vi[v1] += 1
+        aj[v2] += 1
 
-            stat += pow(vij[v_key][a_key], 2) / (vi[v_key] * aj[a_key]) - 1;
+    stat = 0
+    for v in vij:
+        for a in vij[v]:
+            stat += pow(vij[v][a], 2) / (vi[v] * aj[a])
 
-    stat = stat * len(rv);
+    stat = (len(rv) // 2) * (stat - 1)
 
     quantile = chi_2_quantile(1 - alpha, pow(255, 2));
+
+    # print(f"<{stat} (-) {quantile}>")
 
     if stat <= quantile:
         return True;
@@ -99,33 +94,32 @@ def independence_of_signs(rv, alpha):
 
 def binary_sequence_uniformity(rv, alpha, r=10):
     vij = dict()
-    aj = dict()
     vi = dict()
 
-    m_ = len(rv) // r;
+    m_ = len(rv) // r
 
-    j_max = len(rv) // r; 
-    for j in range(0, j_max):
+    for j in range(0, r):
         vij[j] = dict()
-        for i in range(0, r):
-            if vij[j].get(rv[j * r + i]) == None:
-                vij[j][rv[j * r + i]] = 0;
+        for i in range(0, m_):
+            if vij[j].get(rv[j * m_ + i]) == None:
+                vij[j][rv[j * m_ + i]] = 0
+            
+            if vi.get(rv[j * m_ + i]) == None:
+                vi[rv[j * m_ + i]] = 0
 
-            vij[j][rv[j * r + i]] += 1;
+            vij[j][rv[j * m_ + i]] += 1
+            vi[rv[j * m_ + i]] += 1
 
-            if vi.get(rv[j * r + i]) == None:
-                vi[rv[j * r + i]] = 0;
-
-            vi[rv[j * r + i]] += 1;
-
-    stat = 0;
+    stat = 0
     for j_segment_key in vij:
         for v_key in vij[j_segment_key]:
-            stat += pow(vij[j_segment_key][v_key], 2) / (vi[v_key] * m_) - 1;
+            stat += pow(vij[j_segment_key][v_key], 2) / (vi[v_key] * m_)
 
-    stat = stat * len(rv);
+    stat = len(rv) * (stat - 1)
 
-    quantile = chi_2_quantile(1 - alpha, 255 * (r - 1));
+    quantile = chi_2_quantile(1 - alpha, 255 * (r - 1))
+
+    # print(f"<{stat} (-) {quantile}>")
 
     if stat <= quantile:
         return True
