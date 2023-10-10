@@ -35,36 +35,38 @@ class LehmerLowGenerator(Generator):
         self.a = a
         self.c = c
         self.x_c = x_0
+        self.m = pow(2, 32)
         
         self.gen_name = "LehmerLowGenerator";
 
     def next(self):
-        x_n = (self.a * self.x_c + self.c);
+        x_n = (self.a * self.x_c + self.c) % self.m
         self.x_c = x_n;
 
         temp_x = self.get_lowest(self.x_c);
         res = [0 for i in range(8)]
         
         for i in range(7, -1, -1):
-            res[i] = temp_x & 1;
-            temp_x = (temp_x >> 1);
+            res[i] = temp_x & 1
+            temp_x = (temp_x >> 1)
 
         return res;
 
     def get_lowest(self, x):
-        return x & 0xFF;
+        return x & 0xFF
 
 class LehmerHighGenerator(Generator):
     def __init__(self, a, c, x_0):
         self.a = a
         self.c = c
         self.x_c = x_0
+        self.m = pow(2, 32)
         
-        self.gen_name = "LehmerHighGenerator";
+        self.gen_name = "LehmerHighGenerator"
 
     def next(self):
-        x_n = (self.a * self.x_c + self.c);
-        self.x_c = x_n;
+        x_n = (self.a * self.x_c + self.c) % self.m
+        self.x_c = x_n
 
         temp_x = self.get_highest(self.x_c);
         res = [0 for i in range(8)];
@@ -83,11 +85,12 @@ class L20Generator(Generator):
     def __init__(self, a):
         self.a = a
         self.gen_name = "L20Generator";
+        self.m = pow(2, 20)
 
     def next(self):
         res = ((self.a >> 2) & 1) ^ ((self.a >> 4) & 1) ^ ((self.a >> 8) & 1) ^ ((self.a >> 19) & 1);
         
-        self.a = (self.a << 1) | res;
+        self.a = ((self.a << 1) | res) % self.m;
 
         return [res];
 
@@ -99,7 +102,7 @@ class L89Generator(Generator):
             self.vals[i] = a & 1;
             a = (a >> 1);
 
-        self.gen_name = "L89Generator";
+        self.gen_name = "L89Generator"
     
     def next(self):
         res = self.vals[0] ^ self.vals[1];
@@ -116,6 +119,10 @@ class GeffeGenerator(Generator):
         self.a_11 = a_11
         self.a_9 = a_9
         self.a_10 = a_10
+
+        self.m_11 = pow(2, 11)
+        self.m_9 = pow(2, 9)
+        self.m_10 = pow(2, 10)
         
         self.l_9();
         self.l_9();
@@ -133,21 +140,21 @@ class GeffeGenerator(Generator):
     def l_11(self):
         res = ((self.a_11 >> 10) & 1) ^ ((self.a_11 >> 8) & 1);
 
-        self.a_11 = (self.a_11 << 1) | res;
+        self.a_11 = ((self.a_11 << 1) | res) % self.m_11
 
         return res;
 
     def l_9(self):
         res = ((self.a_9 >> 8) & 1) ^ ((self.a_9 >> 7) & 1) ^ ((self.a_9 >> 5) & 1) ^ ((self.a_9 >> 4) & 1);
 
-        self.a_9 = (self.a_9 << 1) | res;
+        self.a_9 = ((self.a_9 << 1) | res) % self.m_9
 
         return res;
 
     def l_10(self):
         res = ((self.a_10 >> 9) & 1) ^ ((self.a_10 >> 6) & 1);
 
-        self.a_10 = (self.a_10 << 1) | res;
+        self.a_10 = ((self.a_10 << 1) | res) % self.m_10
 
         return res;
 
@@ -160,7 +167,7 @@ class WolframGenerator(Generator):
     
     def next(self):
         # r = (r <<< 1) ^ (r | (r >>> 1))
-        self.r = ((self.r << 1) | (self.r >> 31)) ^ (self.r | ((self.r >> 1) | (self.r << 31))) % self.m
+        self.r = (((self.r << 1) | (self.r >> 31)) ^ (self.r | ((self.r >> 1) | (self.r << 31)))) % self.m
 
         if self.r % 2:
             return [True];

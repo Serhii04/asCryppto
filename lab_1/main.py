@@ -1,12 +1,12 @@
+import io
+# import os
+# print(os.getcwd())
 
 import byte_gen
 from byte_gen_test import signs_equality as se
 from byte_gen_test import independence_of_signs as ios
 from byte_gen_test import binary_sequence_uniformity as bsu
 
-
-# import os
-# print(os.getcwd())
 
 def bp(b):
     if b:
@@ -24,7 +24,7 @@ def main():
     wolfram = byte_gen.WolframGenerator(32456);
     
     trash_text = "Some string about warm love of Ron Uisli and his rat. Rat, rat, rat. How I like you my llittle liker of looking of sleeping ron."
-    with open("lab_1/alice.txt", "r") as f:
+    with io.open("lab_1/alice.txt", "r", encoding='utf-8') as f:
         trash_text = f.read()
 
     baba_luda = byte_gen.LibrarianGenerator(trash_text);
@@ -41,18 +41,18 @@ def main():
         # l_89,
         # geffe,
         # wolfram,
-        baba_luda,
-        blum_mika,
+        # baba_luda,
+        # blum_mika,
         blum_mika_byte,
-        blum_blum_shuba,
-        blum_blum_shuba_byte,
+        # blum_blum_shuba,
+        # blum_blum_shuba_byte,
     ]
 
-    k = 8
+    k = 1
     for gen in gens:
         print(f"\n{k:2d}) {gen.about()}")
  
-        rv_size = 1000000;
+        rv_size = 2000000;
         rv = [] 
 
         for i in range(0, rv_size):
