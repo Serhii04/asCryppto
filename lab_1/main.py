@@ -68,10 +68,6 @@ def main(rv_size=1000000):
 
     return 0;
 
-def main2():
-    for alpha in [0.01, 0.05, 0.1]:
-        print(f"{alpha:0.2f} | {ch2(1 - alpha)} | {ch2(1 - alpha, pow(255, 2))} | {ch2(1 - alpha, 255 * (pow(10, 1) - 1))} | {ch2(1 - alpha, 255 * (pow(10, 2) - 1))} | {ch2(1 - alpha, 255 * (pow(10, 3) - 1))} | {ch2(1 - alpha, 255 * (pow(10, 4) - 1))}")
-
 if __name__ == "__main__":
-    main()
+    main(1000)
 

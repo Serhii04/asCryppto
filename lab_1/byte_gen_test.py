@@ -1,5 +1,7 @@
 # Tests
 
+from collections import defaultdict
+
 from math import sqrt
 
 NORMAL_DISTRIBUTION_QUANTILE = {
@@ -55,37 +57,27 @@ def signs_equality(rv, alpha):
 
 
 def independence_of_signs(rv, alpha):
-    vij = dict()
-    vi = dict()
-    aj = dict()
+    vij = [[0 for i in range(256)] for j in range(256)]
+    vi = [0 for i in range(256)]
+    aj = [0 for i in range(256)]
 
     for i  in range(0, len(rv) // 2):
         v1 = rv[2 * i]
         v2 = rv[2 * i + 1]
-
-        if vij.get(v1) == None:
-            vij[v1] = dict()
-            vi[v1] = 0
-        
-
-        if vij[v1].get(v2) == None:
-            vij[v1][v2] = 0
-            aj[v2] = 0
 
         vij[v1][v2] += 1
         vi[v1] += 1
         aj[v2] += 1
 
     stat = 0
-    for v in vij:
-        for a in vij[v]:
-            stat += pow(vij[v][a], 2) / (vi[v] * aj[a])
+    for v in range(256):
+        for a in range(256):
+            if vi[v] != 0 and aj[a] != 0:
+                stat += pow(vij[v][a], 2) / (vi[v] * aj[a])
 
     stat = (len(rv) // 2) * (stat - 1)
 
     quantile = chi_2_quantile(1 - alpha, pow(255, 2));
-
-    # print(f"<{stat} (-) {quantile}>")
 
     if stat <= quantile:
         return True;
@@ -118,8 +110,6 @@ def binary_sequence_uniformity(rv, alpha, r=10):
     stat = len(rv) * (stat - 1)
 
     quantile = chi_2_quantile(1 - alpha, 255 * (r - 1))
-
-    # print(f"<{stat} (-) {quantile}>")
 
     if stat <= quantile:
         return True
