@@ -4,6 +4,7 @@ import math
 
 import generator as gn
 
+__FLOOD__MODE__ = False
 
 __SMALL_PRIMES__ = [2, 3, 5, 7, 11, 13, 17, 19, 23]
 
@@ -75,7 +76,12 @@ def get_prime_number_in_interval(start: int, end: int) -> int:
     p = m_0
     while True:
         if is_prime(p):
+            if __FLOOD__MODE__:
+                print(f"Number {p} is prime")
             return p
+        
+        if __FLOOD__MODE__:
+            print(f"Number {p} isn't prime")
 
         p += 2
         
@@ -111,6 +117,9 @@ class User:
             raise ValueError(F"None value is gieven")
 
         self.set_key(p=p, q=q)
+
+        self.p = p
+        self.q = q
     
     def set_key(self, p: int, q: int) -> None:
         self.n = p * q
@@ -131,7 +140,7 @@ class User:
         return self.d
     
     def __str__(self) -> str:
-        return f"n = {self.n},\n e = {self.e},\n d = {self.d}"
+        return f"p = {hex(self.p)},\nq = {hex(self.q)},\nn = {hex(self.n)},\ne = {hex(self.e)},\nd = {hex(self.d)}"
 
 def Encrypt(message: int, user: User) -> int:
     n, e = user.open_key()
