@@ -72,36 +72,144 @@ def is_prime(p: int) -> bool:
     return Miller_Rabin_test(p=p, k=int(math.log(p)))
 
 def get_prime_number_in_interval(start: int, end: int) -> int:
+    m_0 = start
     if start % 2 == 0:
-        start += 1
+        m_0 += 1
 
-    for p in range(start, end, 2):
-        print(p)
+    # for p in range(m_0, end, 2):
+    p = m_0
+    while True:
         if is_prime(p):
             return p
+
+        p += 2
         
-# def get_prime_number_with_lenght(l: int) -> int:
-#     p = 0
-#     B = 1
+def get_prime_number_of_lenght(l: int) -> int:
+    p = 0
+    B = 1
 
-#     gen = gn.BuildInGenerator()
-#     for i in range(l):
-#         b = (gen.next())[0]
+    gen = gn.BuildInGenerator()
+    for i in range(l-1):
+        b = (gen.next())[0]
         
-#         if b:
-#             p += B
+        if b:
+            p += B
         
-#         B *= 2
+        B *= 2
 
-#     return p
+    p += B  # because we need number that have l or more bits
 
+    return get_prime_number_in_interval(start=p, end=2 * p - 2)
 
-def main():
-    print(18, is_prime(p=18))
-    print(17, is_prime(p=17))
-    print(5783, is_prime(p=5783))
-    print(5782, is_prime(p=5782))
-    print(5789, is_prime(p=5789))
+def GenerateKeyPair(l: int=256):
+    p = get_prime_number_of_lenght(l)
+    q = get_prime_number_of_lenght(l)
 
-if __name__ == "__main__":
-    main()
+    return p, q
+
+class User:
+    def __init__(self, p: int=None, q: int=None):
+        if p is None and q is None:
+            p, q = GenerateKeyPair()
+
+        if p is None or q is None:
+            raise ValueError(F"None value is gieven")
+
+        self.set_key(p=p, q=q)
+    
+    def set_key(self, p: int, q: int):
+        self.n = p * q
+
+        phi = (p - 1) * (q - 1)
+
+        self.e = random.randint(2, phi - 1)
+        
+        while gcd(self.e, phi) != 1:
+            self.e = random.randint(2, phi - 1)
+
+        self.d = pow(self.e, -1, phi)
+
+    def open_key(self):
+        return self.n, self.e
+    
+    def secret_key(self):
+        return self.d
+    
+    def send_key(self, k: int, n1: int, e1: int):
+        k1 = pow(k, e1, n1)
+        S = pow(k, self.d, self.n)
+        S1 = pow(S, e1, n1)
+
+        return k1, S1
+    
+    def receive_key(self, k1, S1, e, n):
+        k = pow(k1, self.d, self.n)
+        S = pow(S1, self.d, self.n)
+    
+        return k == pow(S, e, n)
+    
+    def __str__(self):
+        return f"n = {self.n},\n e = {self.e},\n d = {self.d}"
+
+def Encrypt(message: int, user: User):
+    n, e = user.open_key()
+
+    if message < 0 or message > n - 1:
+        raise ValueError(f"Message should be smaller than n value: M = {message}, n = {n}")
+    
+    return pow(message, e, n)
+
+def Decrypt(message: int, user: User):
+    n, e = user.open_key()
+    d = user.secret_key()
+
+    if message < 0 or message > n - 1:
+        raise ValueError(f"Message should be smaller than n value: M = {message}, n = {n}")
+    
+    return pow(message, d, n)
+
+def Sign(message: int, user: User):
+    n, e = user.open_key()
+    d = user.secret_key()
+
+    if message < 0 or message > n - 1:
+        raise ValueError(f"Message should be smaller than n value: M = {message}, n = {n}")
+    
+    return pow(message, d, n)
+
+def Verify(message: int, signed_message: int, user: User):
+    n, e = user.open_key()
+    
+    return pow(signed_message, e, n) == message
+
+def SendKey(sender: User, receiver: User, k: int):
+    n, e = sender.open_key()
+    d = sender.secret_key()
+
+    n1, e1 = receiver.open_key()
+    
+    k1 = pow(k, e1, n1)
+    S = pow(k, d, n)
+    print(f"S  = {S}")
+    S1 = pow(S, e1, n1)
+
+    return k1, S1
+
+def ReceiveKey(sender: User, receiver: User, k1: int, S1: int):
+    n, e = sender.open_key()
+
+    n1, e1 = receiver.open_key()
+    d1 = receiver.secret_key()
+
+    k = pow(k1, d1, n1)
+    S = pow(S1, d1, n1)
+
+    ps = pow(S, e, n)
+    if k == pow(S, e, n):
+        return k
+
+    print(f"PS = {ps}")
+    print(f"tk = {k}")
+    return None
+
+    
