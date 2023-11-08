@@ -3,13 +3,15 @@ import random
 from algorithms import User, Encrypt, Decrypt, Sign, Verify, SendKey, ReceiveKey
 
 def abonent_example():
-    M = random.randint(pow(2, 20), pow(2, 400))
     A = User()
     n, e = A.open_key()
     d = A.secret_key()
+    
     print(f"n = {hex(n)}")
     print(f"e = {hex(e)}")
     print(f"d = {hex(d)}")
+
+    M = random.randint(pow(2, 400), pow(2, 500))
     print(f"M = {hex(M)}")
 
     C = Encrypt(message=M, user=A)
@@ -27,8 +29,7 @@ def sort_users(A: User, B: User):
     n1, e1 = A.open_key()
     n2, e2 = B.open_key()
 
-    if n1 < n2:
-        print("sorting ...")
+    if n1 > n2:
         return B, A
     
     return A, B
@@ -38,9 +39,6 @@ def key_excange_example():
     B = User()
 
     A, B = sort_users(A, B)
-
-    # print(A)
-    # print(B)
 
     k_max = min((A.open_key())[0], (B.open_key())[0]) - 1
     k = random.randint(1, k_max)
@@ -52,7 +50,10 @@ def key_excange_example():
 
 
 def main():
-    # abonent_example()
+    abonent_example()
+
+    print("")
+
     key_excange_example()
 
 if __name__ == "__main__":

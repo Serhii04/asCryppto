@@ -24,15 +24,12 @@ def is_strong_pseudoprime(x: int, p: int) -> bool:
         d = d // 2
         s += 1
 
-    # print(f"x = {x}, s = {s}, d = {d}, pow = {pow(x, d, p)}")
-
     temp_x = pow(x, d, p)
     if temp_x == 1 or temp_x == p - 1:
         return True
     
     for r in range(1, s):
         temp_x = pow(temp_x, 2, p)
-        # print(temp_x)
 
         if temp_x == p - 1:
             return True
@@ -47,7 +44,6 @@ def Miller_Rabin_test_once(p: int) -> bool:
     x = random.randint(a=2, b=(p - 1))
 
     if gcd(x, p) > 1:
-        # print(f"gcd({x}, {p}) > 1 ({gcd(x, p)})")
         return False
     
     if not is_strong_pseudoprime(p=p, x=x):
@@ -66,7 +62,6 @@ def Miller_Rabin_test(p: int, k: int) -> bool:
 def is_prime(p: int) -> bool:
     for prime in __SMALL_PRIMES__:
         if p > prime and p % prime == 0:
-            # print("flssss")
             return False
     
     return Miller_Rabin_test(p=p, k=int(math.log(p)))
@@ -101,7 +96,7 @@ def get_prime_number_of_lenght(l: int) -> int:
 
     return get_prime_number_in_interval(start=p, end=2 * p - 2)
 
-def GenerateKeyPair(l: int=256):
+def GenerateKeyPair(l: int=256) -> (int, int):
     p = get_prime_number_of_lenght(l)
     q = get_prime_number_of_lenght(l)
 
@@ -117,7 +112,7 @@ class User:
 
         self.set_key(p=p, q=q)
     
-    def set_key(self, p: int, q: int):
+    def set_key(self, p: int, q: int) -> None:
         self.n = p * q
 
         phi = (p - 1) * (q - 1)
@@ -129,29 +124,16 @@ class User:
 
         self.d = pow(self.e, -1, phi)
 
-    def open_key(self):
+    def open_key(self) -> (int, int):
         return self.n, self.e
     
-    def secret_key(self):
+    def secret_key(self) -> int:
         return self.d
     
-    def send_key(self, k: int, n1: int, e1: int):
-        k1 = pow(k, e1, n1)
-        S = pow(k, self.d, self.n)
-        S1 = pow(S, e1, n1)
-
-        return k1, S1
-    
-    def receive_key(self, k1, S1, e, n):
-        k = pow(k1, self.d, self.n)
-        S = pow(S1, self.d, self.n)
-    
-        return k == pow(S, e, n)
-    
-    def __str__(self):
+    def __str__(self) -> str:
         return f"n = {self.n},\n e = {self.e},\n d = {self.d}"
 
-def Encrypt(message: int, user: User):
+def Encrypt(message: int, user: User) -> int:
     n, e = user.open_key()
 
     if message < 0 or message > n - 1:
@@ -159,7 +141,7 @@ def Encrypt(message: int, user: User):
     
     return pow(message, e, n)
 
-def Decrypt(message: int, user: User):
+def Decrypt(message: int, user: User) -> int:
     n, e = user.open_key()
     d = user.secret_key()
 
@@ -168,7 +150,7 @@ def Decrypt(message: int, user: User):
     
     return pow(message, d, n)
 
-def Sign(message: int, user: User):
+def Sign(message: int, user: User) -> int:
     n, e = user.open_key()
     d = user.secret_key()
 
@@ -177,12 +159,12 @@ def Sign(message: int, user: User):
     
     return pow(message, d, n)
 
-def Verify(message: int, signed_message: int, user: User):
+def Verify(message: int, signed_message: int, user: User) -> bool:
     n, e = user.open_key()
     
     return pow(signed_message, e, n) == message
 
-def SendKey(sender: User, receiver: User, k: int):
+def SendKey(sender: User, receiver: User, k: int) -> (int, int):
     n, e = sender.open_key()
     d = sender.secret_key()
 
@@ -190,12 +172,11 @@ def SendKey(sender: User, receiver: User, k: int):
     
     k1 = pow(k, e1, n1)
     S = pow(k, d, n)
-    print(f"S  = {S}")
     S1 = pow(S, e1, n1)
 
     return k1, S1
 
-def ReceiveKey(sender: User, receiver: User, k1: int, S1: int):
+def ReceiveKey(sender: User, receiver: User, k1: int, S1: int) -> int:
     n, e = sender.open_key()
 
     n1, e1 = receiver.open_key()
@@ -208,8 +189,6 @@ def ReceiveKey(sender: User, receiver: User, k1: int, S1: int):
     if k == pow(S, e, n):
         return k
 
-    print(f"PS = {ps}")
-    print(f"tk = {k}")
     return None
 
     
