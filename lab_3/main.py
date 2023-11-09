@@ -1,6 +1,6 @@
 import random
 
-import algorithms as alg
+from algorithms import *
 
 def encrypt_decrypt_example():
     # M = random.randint(pow(2, 64), pow(2, 301))
