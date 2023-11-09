@@ -300,9 +300,7 @@ def Sign(message: int, user: User) -> int:
 def Verify(message: int, sign: int, user: User) -> bool:
     n = user.open_key()
 
-    x_ = pow(sign, 2)
-    print(f"x_ = {hex(x_)}")
-    print(f"sign = {hex(sign)}")
+    x_ = pow(sign, 2, n)
 
     some_form_mess = format_message(message=message, n=n)
     if (x_ >> 64) == (some_form_mess >> 64):

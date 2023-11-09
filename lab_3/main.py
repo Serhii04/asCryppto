@@ -31,13 +31,16 @@ def verification_example():
     print(A)
     print("")
 
-    M = 0x1c52b6d7d64cc3b91b8485c8159495eb2d4733611638a7b341c8e63b5041bbad4b83b2abc019
+    # M = 0x1c52b6d7d64cc3b91b8485c8159495eb2d4733611638a7b341c8e63b5041bbad4b83b2abc019
+    M = random.randint(pow(2, 64), pow(2, 301))
     print(f"M  = {hex(M)}")
     S = Sign(message=M, user=A)
     print(f"S  = {hex(S)}")
 
     sign_is_correct = Verify(message=M, sign=S, user=A)
     print(f"sign_is_correct = {sign_is_correct}")
+
+
 
 # def main3():
 #     A = User()
@@ -66,17 +69,8 @@ def verification_example():
 #     for key in vals:
 #         print(f"{vals[key]} n umbers of {key}")
 
-
 if __name__ == "__main__":
-    # # main1()
-    # main2()
+    # encrypt_decrypt_example()
+    verification_example()
 
-    # # m1 = 0x12345678987654321
-    # # n = 0x1234567876543234567865
 
-    # # print(hex(format_message(message=m1, n=n) >> 64))
-    # # print(hex(format_message(message=m1, n=n) >> 64))
-    # # print(hex(format_message(message=m1, n=n) >> 64))
-
-    encrypt_decrypt_example()
-    # verification_example()
