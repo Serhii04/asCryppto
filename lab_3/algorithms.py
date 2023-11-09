@@ -253,43 +253,21 @@ def Encrypt(message: int, user: User) -> int:
 
     return y, c1, c2
 
-def blum_mod_sqrt(y: int, p: int):  # y = 4 * m + 3
-    m = (p - 3) //  4
-    y = pow(y, m + 1, p)
-
-    return y, p - y
-
 def get_four_square_roots(y: int, p: int, q: int) -> [int, ...]:
     n = p * q
     
-    y_p = blum_mod_sqrt(y, p)
-    y_q = blum_mod_sqrt(y, q)
+    s1 = pow(y, (p + 1) // 4, p)
+    s2 = pow(y, (q + 1) // 4, q)
 
-    p_inv = pow(p, -1, q)
-    q_inv = pow(q, -1, p)
+    u = pow(p, -1, q)
+    v = pow(q, -1, p)
 
     y_sqrt = []
-    for yp_i in y_p:
-        for yq_j in y_q:
-            y_sqrt.append((yp_i * q * q_inv + yq_j * p * p_inv) % n)
+    for pm1 in [1, -1]:
+        for pm2 in [1, -1]:
+            y_sqrt.append((pm1 * u * p * s2 + pm2 * v * q * s1) % n)
     
     return y_sqrt
-
-# def get_four_square_roots(y: int, p: int, q: int) -> [int, ...]:
-#     n = p * q
-    
-#     s1 = pow(y, (p + 1) // 4, p)
-#     s2 = pow(y, (q + 1) // 4, q)
-
-#     u = pow(p, -1, q)
-#     v = pow(q, -1, p)
-
-#     y_sqrt = []
-#     for s1p in [s1, -s1]:
-#         for s2q in [s2, -s2]:
-#             y_sqrt.append((u * p * s1p + v * q * s2q) % n)
-    
-#     return y_sqrt
 
 def Decrypt(y: int, c1: int, c2: int, p: int, q: int) -> int:
     n = p * q
