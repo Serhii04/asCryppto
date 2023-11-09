@@ -106,14 +106,14 @@ def get_prime_number_blum_part_of_lenght(l: int) -> int:
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 def format_message(message: int, n: int):
-    l = int(math.log2(n))
+    l = n.bit_length() // 8 + (n % 8 > 0)
 
-    if int(math.log2(message)) >= l - 10:
-        raise ValueError("Very long message")
+    # if message.bit_length() // 8 >= l - 10:
+    #     raise ValueError("Very long message")
     
     r = random.randint(0, pow(2, 64) - 1)
 
-    x = 255 * pow(2, 8 * (l - 10)) + message * pow(2, 64) + r
+    x = 255 * pow(2, 8 * (l - 8)) + message * pow(2, 64) + r
 
     return x
 
@@ -263,7 +263,6 @@ def get_four_square_roots(y: int, p: int, q: int) -> [int, ...]:
     n = p * q
     
     y_p = blum_mod_sqrt(y, p)
-    
     y_q = blum_mod_sqrt(y, q)
 
     p_inv = pow(p, -1, q)
@@ -299,9 +298,8 @@ def Sign(message: int, user: User) -> int:
     while Jacobi_symbol(a=x, n=p) != 1 or Jacobi_symbol(a=x, n=q) != 1:
         x = format_message(message=message, n=n)
 
-    y_sqrt = get_four_square_roots(y=x, p=p, q=q)
-
-    rch = random.choice(y_sqrt)
+    x_sqrt = get_four_square_roots(y=x, p=p, q=q)
+    rch = random.choice(x_sqrt)  # rch^2 = x (mod pq)
 
     return rch
 
@@ -309,21 +307,12 @@ def Verify(message: int, sign: int, user: User) -> bool:
     n = user.open_key()
 
     x_ = pow(sign, 2)
-    print(f"x_ = {x_}")
+    print(f"x_ = {hex(x_)}")
+    print(f"sign = {hex(sign)}")
 
-    n = user.open_key()
-    l = int(math.log2(n))
-    max_x_ = 256 * pow(2, 8 * (l - 10))
-
-    message_l = int(math.log2(message))
-    mask = pow(2, message_l) - 1
-    print(f"mask = {hex(mask)}")
-    
-    while x_ < max_x_:
-        if (x_ >> 64) & mask == message:
-            return True
-        
-        x_ += n
+    some_form_mess = format_message(message=message, n=n)
+    if (x_ >> 64) == (some_form_mess >> 64):
+        return True
     
     return False
 
