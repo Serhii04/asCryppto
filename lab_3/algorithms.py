@@ -214,9 +214,6 @@ class User:
         self.b = b
 
     def open_key(self) -> (int, int) or int:
-        if self.b == 0:
-            return self.n
-        
         return self.n, self.b
     
     def secret_key(self) -> (int, int):
@@ -247,7 +244,7 @@ def calc_aditional_bits(x: int, n: int) -> (int, int):
     return c1, c2
 
 def Encrypt(message: int, user: User) -> int:
-    n = user.open_key()
+    n, b = user.open_key()
     x = message
 
     if x < math.sqrt(n):
@@ -294,7 +291,7 @@ def Decrypt(y: int, c1: int, c2: int, p: int, q: int) -> int:
             return y_i
 
 def Sign(message: int, user: User) -> int:
-    n = user.open_key()
+    n, b = user.open_key()
     p, q = user.secret_key()
 
     x = format_message(message=message, n=n)
@@ -307,7 +304,7 @@ def Sign(message: int, user: User) -> int:
     return rch
 
 def Verify(message: int, sign: int, user: User) -> bool:
-    n = user.open_key()
+    n, b = user.open_key()
 
     x_ = pow(sign, 2, n)
 
