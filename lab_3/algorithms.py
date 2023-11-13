@@ -209,36 +209,51 @@ def GenerateKeyPair(l: int=256) -> (int, int):
     return p, q
 
 class User:
-    def __init__(self, p: int=None, q: int=None):
+    def __init__(self, p: int=None, q: int=None, b: int=0):
         if p is None and q is None:
             p, q = GenerateKeyPair()
 
         if p is None or q is None:
             raise ValueError(F"None value is gieven")
 
-        self.set_key(p=p, q=q)
+        self.set_key(p=p, q=q, b=b)
     
-    def set_key(self, p: int, q: int) -> None:
+    def set_key(self, p: int, q: int, b: int=0) -> None:
         self.n = p * q
         self.p = p
         self.q = q
+        self.b = b
 
-    def set_key_server(self, n: int) -> None:
+    def set_key_server(self, n: int, b: int=0) -> None:
         self.n = n
         self.p = None
         self.q = None
+        self.b = b
 
-    def open_key(self) -> int:
-        return self.n
+    def open_key(self) -> (int, int) or int:
+        if self.b == 0:
+            return self.n
+        
+        return self.n, self.b
     
     def secret_key(self) -> (int, int):
         return self.p, self.q
     
     def __str__(self) -> str:
-        if self.p == None and self.q == None:
-            return f"n = {hex(self.n)}"
+        s = ""
+        
+        if self.p is not None:
+            s += f"p = {hex(self.p)},\n"
+        
+        if self.q is not None:
+            s += f"q = {hex(self.q)},\n"
+        
+        if self.b != 0:
+            s += f"b = {hex(self.b)},\n"
 
-        return f"p = {hex(self.p)},\nq = {hex(self.q)},\nn = {hex(self.n)}"
+        s += f"n = {hex(self.n)}"
+
+        return s
 
 def calc_aditional_bits(x: int, n: int) -> (int, int):
     c1 = x % 2
