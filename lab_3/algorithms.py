@@ -101,9 +101,9 @@ def format_message(message: int, n: int):
     # if message.bit_length() // 8 >= l - 10:
     #     raise ValueError("Very long message")
     
-    r = random.randint(0, pow(2, 64) - 1)
+    r = random.randint(0, pow(2, 8 * 8) - 1)
 
-    x = 255 * pow(2, 8 * (l - 8)) + message * pow(2, 64) + r
+    x = 255 * pow(2, 8 * (l - 2)) + message * pow(2, 64) + r
 
     return x
 
@@ -309,6 +309,7 @@ def Verify(message: int, sign: int, user: User) -> bool:
     x_ = pow(sign, 2, n)
 
     some_form_mess = format_message(message=message, n=n)
+    
     if (x_ >> 64) == (some_form_mess >> 64):
         return True
     

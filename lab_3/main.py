@@ -42,7 +42,7 @@ def verification_example():
 
 
 def server_encryption_example(A: User, S: User, M):
-    print("Encryption:")
+    print("\nEncryption:")
     C, c1, c2 = Encrypt_extended(message=M, user=S)
 
     print(f"C = {hex(C)}")
@@ -52,11 +52,23 @@ def server_encryption_example(A: User, S: User, M):
     # print(f"DC = {hex(DC)}\nM  = {hex(M)}")
 
 def server_decryption_example(A: User, S: User, C, c1, c2):
-    print("Decryption:")
-    M = 0x222222222222222222222222222222
+    print("\nDecryption:")
     DC = Decrypt_extended(y=C, c1=c1, c2=c2, receiver=A)
     print(f"DC = {hex(DC)}")
-    print(f"M  = {hex(M)}")
+
+def server_signing_example(A: User, M: int):
+    print("\nSigning:")
+    sign_ = Sign(message=M, user=A)
+    print(f"M = {hex(M)}")
+    print(f"S = {hex(sign_)}")
+
+    is_signer = Verify(message=M, sign=sign_, user=A)
+    print(f"is_signer = {is_signer}")
+
+def server_verification_example(A: User, sign: int, M: int):
+    print("\nVerification:")
+    is_signer = Verify(message=M, sign=sign, user=A)
+    print(f"is_signer = {is_signer}")
 
 if __name__ == "__main__":
     # Creation of User A
@@ -81,9 +93,19 @@ if __name__ == "__main__":
     # M = 0x222222222222222222222222222222    
     # server_encryption_example(A=A, S=S, M=M)
 
-    # Decryption
-    C = 0x36407dd82cebf44e11ab1d53e59abee0eb56bd067c27295445f3bd2b7651f9e53c7bdda8f599ab2
-    c1 = 0
-    c2 = 1
-    server_decryption_example(A=A, S=S, C=C, c1=c1, c2=c2)
+    # # Decryption
+    # C = 0x36407dd82cebf44e11ab1d53e59abee0eb56bd067c27295445f3bd2b7651f9e53c7bdda8f599ab2
+    # c1 = 0
+    # c2 = 1
+    # server_decryption_example(A=A, S=S, C=C, c1=c1, c2=c2)
+
+    # Signing
+    M = 0x222222222222222222222222222222222
+    server_signing_example(A=A, M=M)
+
+    # # Verification
+    # M = 0x222222222222222222222222222222
+    # sign = 0x3EB422C50AD14B18459F8AF88035B6508AB99C2A20EE441464
+    # server_verification_example(A=S, sign=sign, M=M)
+
 
