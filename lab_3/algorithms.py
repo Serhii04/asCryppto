@@ -294,14 +294,17 @@ def Sign(message: int, user: User) -> int:
     n, b = user.open_key()
     p, q = user.secret_key()
 
-    x = format_message(message=message, n=n)
-    while Jacobi_symbol(a=x, n=p) != 1 or Jacobi_symbol(a=x, n=q) != 1:
+    while True:
         x = format_message(message=message, n=n)
+        while Jacobi_symbol(a=x, n=p) != 1 or Jacobi_symbol(a=x, n=q) != 1:
+            x = format_message(message=message, n=n)
 
-    x_sqrt = get_four_square_roots(y=x, p=p, q=q)
-    rch = random.choice(x_sqrt)  # rch^2 = x (mod pq)
+        x_sqrts = get_four_square_roots(y=x, p=p, q=q)
 
-    return rch
+        rch = random.choice(x_sqrts)  # rch^2 = x (mod pq)
+
+        if pow(rch, 2, n) == x % n:
+            return rch
 
 def Verify(message: int, sign: int, user: User) -> bool:
     n, b = user.open_key()
