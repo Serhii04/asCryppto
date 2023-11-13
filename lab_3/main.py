@@ -41,36 +41,35 @@ def verification_example():
     print(f"sign_is_correct = {sign_is_correct}")
 
 
-
-# def main3():
-#     A = User()
-
-#     A.set_key_server(n=0xCD845B043FE28EA28ADA650F405B0F860FEACDFA7009B597B4DC41A9945EA025)
-    
-#     M = 0x1c52b6d7d64cc3b91b8485c8159495eb2
-#     print(f"M  = {hex(M)}")
-
-#     C, C1, C2 = Encrypt(message=M, user=A)
-#     print(f"C  = {hex(C)}")
-
-#     DC = Decrypt(c1=C1, c2=C2, y=C, p=A.p, q = A.q)
-#     print(f"DC = {C1}, {C2}, {hex(DC)}")
-#     print(f"M  = {hex(M)}")
-
-# def main4():
-#     from collections import defaultdict
-#     vals = defaultdict(int)
-#     for i in range(100):
-#         a, b = GenerateKeyPair()
-
-#         vals[a] += 1
-#         vals[b] += 1
-
-#     for key in vals:
-#         print(f"{vals[key]} n umbers of {key}")
+def server_encryption_example(A: User, S: User, message: int):
+    return Encrypt_extended(message=message, user=A)
 
 if __name__ == "__main__":
-    # encrypt_decrypt_example()
-    verification_example()
+    p = 0xfffffffc0000000000000000000000000000000000000000000000000000023f
+    q = 0xfffffffffffffffffffffffffffffffff000000000000000000000000000002f
+    b = 0x196e3afd550e9a849848139d317e6770ba6983cdf6aabdd5a7
+    A = User()
+    A.set_key(p=p, q=q, b=b)
+
+    server_Modulus = 0xF2DEADB4AFA077EC3BDB59FEA0DBB5DF2765CF98D559DBC199
+    server_b = 0x196e3afd550e9a849848139d317e6770ba6983cdf6aabdd5a7
+    S = User()
+    S.set_key_server(n=server_Modulus, b=server_b)
+
+    print("A:")
+    print(A)
+    print("")
+
+    print("S:")
+    print(S)
+    print("")
+
+
+    M = 0x222222222222222222222222222222222222222222222222222222222222222222222222
+    C, c1, c2 = server_encryption_example(A=A, S=S, message=M)
+
+    print(f" C = {hex(C)}")
+    print(f" c1, c2 = {c1}, {c2}")
+
 
 

@@ -44,7 +44,6 @@ def is_strong_pseudoprime(x: int, p: int) -> bool:
         
     return False
 
-
 def Miller_Rabin_test_once(p: int) -> bool:
     x = random.randint(a=2, b=(p - 1))
 
@@ -62,7 +61,6 @@ def Miller_Rabin_test(p: int, k: int) -> bool:
             return False
     
     return True
-
 
 def is_prime(p: int) -> bool:
     for prime in __SMALL_PRIMES__:
@@ -339,6 +337,31 @@ def Verify(message: int, sign: int, user: User) -> bool:
 
 # def ReceiveKey() -> int:
 #     pass
+
+
+# /////////////////////////////////////////////
+#        Extended versions of functions
+# /////////////////////////////////////////////
+
+def Encrypt_extended(message: int, user: User) -> int:
+    n, b = user.open_key()
+    x = message
+
+    if x < math.sqrt(n):
+        print("Message is small")
+    
+    if x > n:
+        print("Message is big")
+
+    # y = pow(x, 2, n)
+    y = x * (x + b) % n
+
+    c1 = ((x + b * pow(2, -1, n)) % n) % 2
+    c2 = Jacobi_symbol(a=(x + b * pow(2, -1, n)), n=n)
+    if c2 != 1:
+        c2 = 0
+
+    return y, c1, c2
 
 
 
