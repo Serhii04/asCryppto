@@ -113,7 +113,7 @@ def get_prime_number_blum_part_of_lenght(l: int) -> int:
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 def format_message(message: int, n: int):
-    l = n.bit_length() // 8 + (n % 8 > 0)
+    l = n.bit_length() // 8 + (n.bit_length() % 8 != 0)
 
     # if message.bit_length() // 8 >= l - 10:
     #     raise ValueError("Very long message")
