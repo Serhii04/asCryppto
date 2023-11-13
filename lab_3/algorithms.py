@@ -70,33 +70,18 @@ def is_prime(p: int) -> bool:
     return Miller_Rabin_test(p=p, k=int(math.log(p)))
 
 def get_prime_number_blum_part_in_interval(start: int, end: int=None) -> int:
-    if end is None:
-        end = 2 * start - 2
-
-    m_0 = start + 3 - (start % 4)
-
-    # for p in range(m_0, end, 2):
-    p = m_0
-    while True:
-        if is_prime(p):
-            if __FLOOD__MODE__:
-                print(f"Number {p} is prime")
-            
-            if not is_blum_number(p):
-                raise ValueError("error p is not blum prime")
-
-            return p
-        
-        if __FLOOD__MODE__:
-            print(f"Number {p} isn't prime")
-
+    """Returns prime number p = 4k+3"""
+    p = start + 3 - (start % 4)  # for apropriate form 4k + 3
+    while not is_prime(p):
         p += 4
+
+    return p
         
 def get_prime_number_blum_part_of_lenght(l: int) -> int:
     p = 0
     B = 1
 
-    for i in range(l-1):
+    for i in range(l):
         b = (random.randbytes(n=1))[0]
         
         if b:
@@ -104,7 +89,7 @@ def get_prime_number_blum_part_of_lenght(l: int) -> int:
         
         B *= 2
 
-    p += B  # because we need number that have l or more bits
+    # p += B  # because we need number that have l or more bits
 
     return get_prime_number_blum_part_in_interval(start=p, end=2 * p - 2)
 
