@@ -223,9 +223,10 @@ class User:
         self.p = p
         self.q = q
 
-
     def set_key_server(self, n: int) -> None:
         self.n = n
+        self.p = None
+        self.q = None
 
     def open_key(self) -> int:
         return self.n
@@ -234,6 +235,9 @@ class User:
         return self.p, self.q
     
     def __str__(self) -> str:
+        if self.p == None and self.q == None:
+            return f"n = {hex(self.n)}"
+
         return f"p = {hex(self.p)},\nq = {hex(self.q)},\nn = {hex(self.n)}"
 
 def calc_aditional_bits(x: int, n: int) -> (int, int):
