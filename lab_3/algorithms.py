@@ -335,11 +335,11 @@ def Encrypt_extended(message: int, user: User) -> int:
     if x < math.sqrt(n):
         print("Message is small")
     
-    if x > n:
+    if x.bit_length() // 8 > n.bit_length() // 8 - 10:
         print("Message is big")
 
     # y = pow(x, 2, n)
-    y = x * (x + b) % n
+    y = (x * (x + b)) % n
 
     c1 = ((x + b * pow(2, -1, n)) % n) % 2
     c2 = Jacobi_symbol(a=(x + b * pow(2, -1, n)), n=n)
@@ -348,6 +348,22 @@ def Encrypt_extended(message: int, user: User) -> int:
 
     return y, c1, c2
 
+def Decrypt_extended(y: int, c1: int, c2: int, receiver: User) -> int:
+    n, b = receiver.open_key()
+    p, q = receiver.secret_key()
+    # n = p * q
+    
+    right_sqrt_parts = get_four_square_roots(y=(y + pow(b, 2, n) * pow(4, -1, n)), p=p, q=q)
 
+    for rp_i in right_sqrt_parts:
+        y_i = (-b * pow(2, -1, n) + rp_i) % n
+
+        cc1 = ((y_i + b * pow(2, -1, n)) % n) % 2
+        cc2 = Jacobi_symbol(a=(y_i + b * pow(2, -1, n)), n=n)
+        if cc2 != 1:
+            cc2 = 0
+
+        if cc1 == c1 and cc2 == c2:
+            return y_i
 
 
