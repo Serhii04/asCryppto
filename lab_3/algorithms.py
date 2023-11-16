@@ -69,6 +69,16 @@ def is_prime(p: int) -> bool:
     
     return Miller_Rabin_test(p=p, k=int(math.log(p)))
 
+def get_random_prime_in_interval(start: int, end: int) -> int:
+    """Return prime with a form p = 4k+3"""
+    p = random.randint(a=start, b=end)
+    
+    p = p + 3 - (p % 4)  # for apropriate form 4k + 3
+    while not is_prime(p):
+        p += 4
+
+    return p
+
 def get_prime_number_blum_part_in_interval(start: int, end: int=None) -> int:
     """Returns prime number p = 4k+3"""
     p = start + 3 - (start % 4)  # for apropriate form 4k + 3
