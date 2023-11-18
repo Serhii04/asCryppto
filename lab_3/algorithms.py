@@ -1,6 +1,6 @@
 import random
 import math
-from sympy.ntheory import jacobi_symbol as jacobi
+from sympy.ntheory import jacobi_symbol
 
 __FLOOD__MODE__ = False
 
@@ -108,83 +108,12 @@ def get_prime_number_blum_part_of_lenght(l: int) -> int:
 
 def format_message(message: int, n: int):
     l = math.ceil(n.bit_length() / 8)
-
     
     r = random.randint(0, pow(2, 64) - 1)
 
     x = 255 * pow(2, 8 * (l - 2)) + message * pow(2, 64) + r
 
     return x
-
-def Jacobi_symbol(a, n):
-    # return _Jacobi_symbol(n=a, k=n)
-    return jacobi(m=a, n=n)
-
-# def _Jacobi_symbol(n, k):
-#     """wikipedias_jacobi"""
-#     assert(k > 0 and k % 2 == 1)
-    
-#     n = n % k
-#     t = 1
-#     while n != 0:
-#         while n % 2 == 0:
-#             n = n / 2
-#             r = k % 8
-#             if r == 3 or r == 5:
-#                 t = -t
-        
-#         n, k = k, n
-#         if n % 4 == 3 and k % 4 == 3:
-#             t = -t
-        
-#         n = n % k
-    
-#     if k == 1:
-#         return t
-#     else:
-#         return 0
-
-# def __Jacobi_symbol_mine(a: int, n: int) -> int:
-#     """Mathmatical funtion to find Jacobi symbol value. It says
-
-#     Args:
-#         a (int): a is natural number.
-#         n (int): n is natural number that isn't divides by 2.
-
-#     Returns:
-#         int: Jacobi symbol value.
-#     """
-
-#     if n <= 0:
-#         raise ValueError("ERROR in Jacobi_symbol: n must be natural number.")
-    
-#     if n % 2 == 0:
-#         raise ValueError("ERROR in Jacobi_symbol: n must be odd.")
-    
-#     a = a % n
-    
-#     rez = 1
-
-#     while a != 0:
-#         while a % 2 == 0:
-#             if ((n*n - 1) / 8) % 2 == 1: 
-#                 rez *= -1
-#             a = a // 2
-
-#         if a == 1:
-#             return rez
-        
-#         if a == -1:
-#             if ((n - 1) / 2) % 2 == 1: 
-#                 rez *= -1
-#             return rez        
-
-#         if ((a - 1) * (n - 1) // 4) % 2 == 1: 
-#             rez *= -1
-
-#         a, n = n % a, a
-
-#     return 0
 
 def is_blum_number(n: int) -> bool:
     return (n - 3) % 4 == 0
@@ -207,7 +136,7 @@ class User:
             p, q = GenerateKeyPair()
 
         if p is None or q is None:
-            raise ValueError(F"None value is gieven")
+            raise ValueError(F"None value is given")
 
         self.set_key(p=p, q=q, b=b)
     
@@ -245,31 +174,6 @@ class User:
 
         return s
 
-def calc_aditional_bits(x: int, n: int) -> (int, int):
-    c1 = x % 2
-    c2 = 0
-    if Jacobi_symbol(a=x, n=n) == 1:
-        c2 = 1
-    
-    return c1, c2
-
-# def Encrypt(message: int, user: User) -> int:
-#     n, b = user.open_key()
-#     x = format_message(message=message, n=n)
-#     print(f"x = {x}")
-
-#     if x < math.sqrt(n):
-#         print("Message is small")
-    
-#     if x > n:
-#         print("Message is big")
-
-#     y = pow(x, 2, n)
-
-#     c1, c2 = calc_aditional_bits(x=x, n=n)
-
-#     return y, c1, c2
-
 def get_four_square_roots(y: int, p: int, q: int) -> [int, ...]:
     n = p * q
     
@@ -286,28 +190,13 @@ def get_four_square_roots(y: int, p: int, q: int) -> [int, ...]:
     
     return y_sqrt
 
-# def Decrypt(y: int, c1: int, c2: int, p: int, q: int) -> int:
-#     n = p * q
-
-#     y_sqrt = get_four_square_roots(y=y, p=p, q=q)
-
-#     if __FLOOD__MODE__:
-#         for y_i in y_sqrt:
-#             print(f"yi = {hex(y_i)}")
-
-#     for y_i in y_sqrt:
-#         cc1, cc2 = calc_aditional_bits(x=y_i, n=n)
-
-#         if cc1 == c1 and cc2 == c2:
-#             return y_i
-
 def Sign(message: int, user: User) -> int:
     n, b = user.open_key()
     p, q = user.secret_key()
 
     while True:
         x = format_message(message=message, n=n)
-        while Jacobi_symbol(a=x, n=p) != 1 or Jacobi_symbol(a=x, n=q) != 1:
+        while jacobi_symbol(m=x, n=p) != 1 or jacobi_symbol(m=x, n=q) != 1:
             x = format_message(message=message, n=n)
 
         x_sqrts = get_four_square_roots(y=x, p=p, q=q)
@@ -329,17 +218,6 @@ def Verify(message: int, sign: int, user: User) -> bool:
     
     return False
 
-# def SendKey() -> (int, int):
-#     pass
-
-# def ReceiveKey() -> int:
-#     pass
-
-
-# /////////////////////////////////////////////
-#        Extended versions of functions
-# /////////////////////////////////////////////
-
 def Encrypt_extended(message: int, user: User) -> int:
     n, b = user.open_key()
     
@@ -348,11 +226,10 @@ def Encrypt_extended(message: int, user: User) -> int:
     if math.ceil(message.bit_length() / 8) > math.ceil(n.bit_length() / 8) - 10:
         print("Message is big")
 
-    # y = pow(x, 2, n)
     y = (x * (x + b)) % n
 
     c1 = ((x + b * pow(2, -1, n)) % n) % 2
-    c2 = Jacobi_symbol(a=(x + b * pow(2, -1, n)), n=n)
+    c2 = jacobi_symbol(m=(x + b * pow(2, -1, n)), n=n)
     if c2 != 1:
         c2 = 0
 
@@ -368,15 +245,12 @@ def Decrypt_extended(y: int, c1: int, c2: int, receiver: User) -> int:
         y_i = (rp_i - b * pow(2, -1, n)) % n
 
         cc1 = ((y_i + b * pow(2, -1, n)) % n) % 2
-        cc2 = Jacobi_symbol(a=(y_i + b * pow(2, -1, n)), n=n)
+        cc2 = jacobi_symbol(m=(y_i + b * pow(2, -1, n)), n=n)
         if cc2 != 1:
             cc2 = 0
 
         if cc1 == c1 and cc2 == c2:
             l = math.ceil(n.bit_length() / 8)
-            # print(f"V1 = {hex(y_i)}")
-            # print(f"V1 = {hex(y_i % n)}")
-            # print(f"V2 = {hex((y_i - 255 * pow(2, 8 * (l - 2))) >> 64)}")
 
             return (y_i - 255 * pow(2, 8 * (l - 2))) >> 64
 
